@@ -1,0 +1,70 @@
+using System;
+using System.IO;
+using System.Net;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+
+namespace getauthtoken
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string url = "https://management.azure.com/subscriptions/hghghg-cf2f-4cad-9bd2-58f17e51168e/resourceGroups/latest1a1rg/providers/Microsoft.Logic/workflows/latest1a1/triggers/manual/histories/08585861412472785964614034483CU11/resubmit?api-version=2016-06-01";
+            string token = GetAccessToken();
+            doGET(url, token);
+            Console.WriteLine("Hello World!");
+        }
+
+
+        public static string GetAccessToken()
+        {
+            string tenantId = "jhgjhgj-d40a-4aed-b28c-255bcdfb9a79";
+            string authContextURL = "https://login.windows.net/" + tenantId;
+            var authenticationContext = new AuthenticationContext(authContextURL);
+            var credential = new ClientCredential(clientId: "jhgjhj-c887-4c35-86d8-db286300c8cb", 
+                clientSecret: "8~jgjggj-hQNp_10G9kEbezz.vtGd");
+            var result = authenticationContext.AcquireTokenAsync(resource: "https://management.azure.com/", clientCredential: credential);
+
+            if (result == null)
+            {
+                throw new InvalidOperationException("Failed to obtain the JWT token");
+            }
+
+            string token = result.Result.AccessToken;
+            return token;
+
+
+        }
+
+
+        private static string doGET(string URI, String token)
+        {
+            Uri uri = new Uri(String.Format(URI));
+
+            // Create the request
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
+            httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + token);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+
+            // Get the response
+            HttpWebResponse httpResponse = null;
+            try
+            {
+                httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            }
+            catch (Exception ex)
+            {
+                 return null;
+            }
+
+            string result = null;
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                result = streamReader.ReadToEnd();
+            }
+
+            return result;
+        }
+    }
+}
