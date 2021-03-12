@@ -54,6 +54,7 @@ namespace getauthtoken
                 var httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
                 httpWebRequest.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + token);
                 httpWebRequest.ContentType = "application/json";
+                httpWebRequest.ContentLength = 0;
                 httpWebRequest.Method = "POST";
 
                 // Get the response
